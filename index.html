@@ -76,15 +76,17 @@
                 }
             ) */
 
-
-            var textureFront = new THREE.TextureLoader().load('textures/omo.png');
-            var textureBack = new THREE.TextureLoader().load('textures/projectsFlipped.png');
+            var textureLoader = new THREE.TextureLoader();
+            var textureFront = textureLoader.load('textures/texture.jpg');
+            var textureBack = textureLoader.load('textures/projectsFlipped.png');
             textureBack.flipY = false;
+
+            var bumpFront = textureLoader.load('textures/bumpMap.jpg');
 
             var coinMaterials = [
                 new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide, vertexColors: THREE.VertexColors }),
-                new THREE.MeshBasicMaterial({ map: textureBack, side: THREE.DoubleSide, vertexColors: THREE.VertexColors }),
-                new THREE.MeshBasicMaterial({ map: textureFront, side: THREE.DoubleSide, vertexColors: THREE.VertexColors }),
+                new THREE.MeshPhongMaterial({ map: textureBack, bumpMap: bumpFront, side: THREE.DoubleSide, vertexColors: THREE.VertexColors }),
+                new THREE.MeshPhongMaterial({ map: textureFront, bumpMap: bumpFront, side: THREE.DoubleSide, vertexColors: THREE.VertexColors }),
             ]
 
             material = new THREE.MeshFaceMaterial(coinMaterials);
@@ -109,15 +111,14 @@
             // renderer.setClearColor('#e5e5e5');
             renderer.setPixelRatio(window.devicePixelRatio);
 
-            renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
+            renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
             controls = new THREE.OrbitControls(camera, renderer.domElement);
 
             console.log("controls", controls)
 
-
             window.addEventListener('resize', () => {
-                renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
+                renderer.setSize(window.innerWidth, window.innerHeight);
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
             });
