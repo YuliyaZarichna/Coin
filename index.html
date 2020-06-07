@@ -113,9 +113,7 @@
 
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-            console.log("controls", controls)
+            // controls = new THREE.OrbitControls(camera, renderer.domElement);
 
             window.addEventListener('resize', () => {
                 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -130,7 +128,7 @@
             requestAnimationFrame(animate);
 
             mesh.rotation.y += 0.007;
-            controls.update();
+            // controls.update();
             renderer.render(scene, camera);
         }
 
