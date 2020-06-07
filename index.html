@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Moneta</title>
+    <link type="text/css" rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <p>Home Page</p>
+    <nav>
+        <ul>
+            <li>
+                <a href="about.html">About</a>
+            </li>
+            <li>
+                <a href="contact.html">Contact</a>
+            </li>
+        </ul>
+    </nav>
+    <div id="canvasContainer"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>-->
+    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+
+    <script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/loaders/GLTFLoader.js"></script>
+
+    <!-- <script src="js/monetaGLTll.js"></script> -->
+    <!-- <script src="js/three.js"></script> -->
+    <script>
+        var camera, scene, renderer, material, mesh, controls;
+        var maxRotation = 2 * Math.PI;
+        var color = new THREE.Color('#A9A9ff');
+
+        function objectClickHandler() {
+            window.open('http://www.pericror.com/');
+        }
+
+        function init() {
+            camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.z = 9;
+            scene = new THREE.Scene();
+
+            var ambientLight = new THREE.AmbientLight(0xcccccc, 1);
+            scene.add(ambientLight);
+
+            var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            scene.add(directionalLight);
+
+            scene.add(camera);
+
+            renderer = new THREE.WebGLRenderer({ alpha: true });
+
+            var coin = new THREE.CylinderGeometry(3, 3, 0.2, 100);
+
+            /* var loader = new THREE.TextureLoader();
+            loader.load([
+                'textures/omo.png',
+                'textures/projectsFlipped.png'
+            ],
+
+                function (texture) {
+                    var material = new THREE.MeshBasicMaterial({
+                        map: texture
+                    });
+                },
+                // onProgress callback currently not supported
+                undefined,
+
+                // onError callback
+                function (err) {
+                    console.error('An error happened.');
+                }
+            ) */
+
+
+            var textureFront = new THREE.TextureLoader().load('textures/omo.png');
+            var textureBack = new THREE.TextureLoader().load('textures/projectsFlipped.png');
+            textureBack.flipY = false;
+
+            var coinMaterials = [
+                new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide, vertexColors: THREE.VertexColors }),
+                new THREE.MeshBasicMaterial({ map: textureBack, side: THREE.DoubleSide, vertexColors: THREE.VertexColors }),
+                new THREE.MeshBasicMaterial({ map: textureFront, side: THREE.DoubleSide, vertexColors: THREE.VertexColors }),
+            ]
+
+            material = new THREE.MeshFaceMaterial(coinMaterials);
+
+            mesh = new THREE.Mesh(coin, material);
+
+
+            mesh.position.set(2, 0, 0);
+
+            mesh.callback = objectClickHandler;
+
+            mesh.scale.set(-1, -1, 1);
+
+            scene.add(mesh);
+
+            camera.position.set(0, 0, 10);
+
+            mesh.rotation.y = 1.57;
+            mesh.rotation.z = 1.57;
+
+
+            // renderer.setClearColor('#e5e5e5');
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
+            document.body.appendChild(renderer.domElement);
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+            console.log("controls", controls)
+
+
+            window.addEventListener('resize', () => {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+            });
+
+        }
+
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            mesh.rotation.y += 0.007;
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        window.onload = function () {
+            init();
+            animate();
+
+            var raycaster = new THREE.Raycaster();
+            var mouse = new THREE.Vector2();
+            var intersects = [];
+            var faceIdx1 = -1, faceIdx2 = -1;
+            var baseColor = new THREE.Color("white");
+            var selectionColor = new THREE.Color("blue");
+            var selectionColorNew = new THREE.Color("red");
+
+
+            function onDocumentMouseDown(event) {
+                console.log("onDocumentMouseDown")
+                event.preventDefault();
+                mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+                mouse.y = - (event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+
+                intersects = raycaster.intersectObjects([mesh]);
+                if (intersects.length === 0) return;
+
+                // set previously selected faces to white
+                setFaceColor(faceIdx1, baseColor);
+                setFaceColor(faceIdx2, baseColor);
+                // find the new indices of faces
+                faceIdx1 = intersects[0].faceIndex;
+                console.log("faceIdx1", faceIdx1)
+                faceIdx2 = faceIdx1 % 2 === 0 ? faceIdx1 + 1 : faceIdx1 - 1;
+                console.log("faceIdx2", faceIdx2)
+                if (faceIdx1 > 300 && faceIdx2 > 300) {
+                    location.href = 'contact.html'
+                    /* setFaceColor(faceIdx1, selectionColorNew);
+                    setFaceColor(faceIdx2, selectionColorNew); */
+                }
+
+                else {
+                    location.href = 'about.html'
+                    /*  setFaceColor(faceIdx1, selectionColor);
+                     setFaceColor(faceIdx2, selectionColor); */
+                }
+
+                var canvas = document.body.getElementsByTagName('canvas')[0];
+
+            }
+
+            function setFaceColor(idx, color) {
+                console.log("setFaceColor")
+                if (idx === -1) return;
+                mesh.geometry.faces[idx].color.copy(color);
+                mesh.geometry.colorsNeedUpdate = true;
+            }
+
+            function onDocumentMouseMove(event) {
+                event.preventDefault();
+                mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+                mouse.y = - (event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+
+                intersects = raycaster.intersectObjects([mesh]);
+
+                var canvas = document.body.getElementsByTagName('canvas')[0];
+                if (intersects.length > 0) {
+                    // console.log("intersects", intersects)
+                    /*intersects[0].object.rotation.x += .05;
+                     intersects[0].object.rotation.y += .05; */
+                    canvas.style.cursor = "pointer";
+                } else {
+                    canvas.style.cursor = "default";
+                }
+
+            }
+
+            function onClick(event) {
+                event.preventDefault();
+                mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+                mouse.y = - (event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+                raycaster.setFromCamera(mouse, camera);
+
+                intersects = raycaster.intersectObjects([mesh]);
+                var canvas = document.body.getElementsByTagName('canvas')[0];
+                if (intersects.length > 0) {
+                    // intersects[0].object.callback();
+                    // location.href = 'about.html'
+                    canvas.style.cursor = "pointer";
+                } else {
+                    canvas.style.cursor = "default";
+                }
+            }
+            document.addEventListener('mousedown', onDocumentMouseDown, false);
+            document.addEventListener('mousemove', onDocumentMouseMove, false);
+            //document.addEventListener('click', onClick, false)
+
+        }
+
+
+    </script>
+</body>
+
+</html>
