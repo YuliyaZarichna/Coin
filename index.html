@@ -20,7 +20,9 @@
             </li>
         </ul>
     </nav>
-    <div id="canvasContainer"></div>
+    <div id="container">
+        <canvas id="canvas"></canvas>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>-->
@@ -31,7 +33,7 @@
     <!-- <script src="js/monetaGLTll.js"></script> -->
     <!-- <script src="js/three.js"></script> -->
     <script>
-        var camera, scene, renderer, material, mesh, controls;
+        var camera, canvas, scene, renderer, material, mesh, controls;
         var maxRotation = 2 * Math.PI;
         var color = new THREE.Color('#A9A9ff');
 
@@ -40,9 +42,17 @@
         }
 
         function init() {
-            camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 2000);
+
+            CANVAS_WIDTH = 300,
+                CANVAS_HEIGHT = 300;
+
+            canvas = document.getElementById("canvas");
+            camera = new THREE.PerspectiveCamera(55, CANVAS_WIDTH / CANVAS_HEIGHT, 1, 5000);
             camera.position.z = 9;
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            // renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             scene = new THREE.Scene();
+            // scene.background = null;
 
             var ambientLight = new THREE.AmbientLight(0xcccccc, 1);
             scene.add(ambientLight);
@@ -52,32 +62,19 @@
 
             scene.add(camera);
 
-            renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(CANVAS_WIDTH, CANVAS_HEIGHT);
+            //canvas.appendChild(renderer.domElement);
+            document.getElementById('container').appendChild(renderer.domElement);
+            // renderer.setClearColor('#e5e5e5');
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            // controls = new THREE.OrbitControls(camera, renderer.domElement);
 
             var coin = new THREE.CylinderGeometry(3, 3, 0.2, 100);
 
-            /* var loader = new THREE.TextureLoader();
-            loader.load([
-                'textures/omo.png',
-                'textures/projectsFlipped.png'
-            ],
-
-                function (texture) {
-                    var material = new THREE.MeshBasicMaterial({
-                        map: texture
-                    });
-                },
-                // onProgress callback currently not supported
-                undefined,
-
-                // onError callback
-                function (err) {
-                    console.error('An error happened.');
-                }
-            ) */
 
             var textureLoader = new THREE.TextureLoader();
-            var textureFront = textureLoader.load('textures/texture.jpg');
+            var textureFront = textureLoader.load('textures/omo.jpg');
             var textureBack = textureLoader.load('textures/projectsFlipped.png');
             textureBack.flipY = false;
 
@@ -85,7 +82,7 @@
 
             var coinMaterials = [
                 new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide, vertexColors: THREE.VertexColors }),
-                new THREE.MeshPhongMaterial({ map: textureBack, bumpMap: bumpFront, side: THREE.DoubleSide, vertexColors: THREE.VertexColors }),
+                new THREE.MeshPhongMaterial({ map: textureBack, side: THREE.DoubleSide, vertexColors: THREE.VertexColors }),
                 new THREE.MeshPhongMaterial({ map: textureFront, bumpMap: bumpFront, side: THREE.DoubleSide, vertexColors: THREE.VertexColors }),
             ]
 
@@ -94,7 +91,7 @@
             mesh = new THREE.Mesh(coin, material);
 
 
-            mesh.position.set(2, 0, 0);
+            //mesh.position.set(2, 0, 0);
 
             mesh.callback = objectClickHandler;
 
@@ -107,17 +104,9 @@
             mesh.rotation.y = 1.57;
             mesh.rotation.z = 1.57;
 
-
-            // renderer.setClearColor('#e5e5e5');
-            renderer.setPixelRatio(window.devicePixelRatio);
-
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
-            // controls = new THREE.OrbitControls(camera, renderer.domElement);
-
             window.addEventListener('resize', () => {
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                camera.aspect = window.innerWidth / window.innerHeight;
+                renderer.setSize(CANVAS_WIDTH, CANVAS_HEIGHT);
+                camera.aspect = CANVAS_WIDTH / CANVAS_HEIGHT;
                 camera.updateProjectionMatrix();
             });
 
@@ -146,14 +135,14 @@
 
 
             function onDocumentMouseDown(event) {
-                console.log("onDocumentMouseDown")
                 event.preventDefault();
-                mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-                mouse.y = - (event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
                 raycaster.setFromCamera(mouse, camera);
 
                 intersects = raycaster.intersectObjects([mesh]);
+
                 if (intersects.length === 0) return;
 
                 // set previously selected faces to white
@@ -175,8 +164,9 @@
                     /*  setFaceColor(faceIdx1, selectionColor);
                      setFaceColor(faceIdx2, selectionColor); */
                 }
+                var canvas = document.getElementById("canvas");
 
-                var canvas = document.body.getElementsByTagName('canvas')[0];
+                // var canvas = document.body.getElementsByTagName('canvas')[0];
 
             }
 
@@ -189,16 +179,18 @@
 
             function onDocumentMouseMove(event) {
                 event.preventDefault();
-                mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-                mouse.y = - (event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
                 raycaster.setFromCamera(mouse, camera);
 
                 intersects = raycaster.intersectObjects([mesh]);
 
+                // var canvas = document.getElementById("canvas");
                 var canvas = document.body.getElementsByTagName('canvas')[0];
+
+
                 if (intersects.length > 0) {
-                    // console.log("intersects", intersects)
                     /*intersects[0].object.rotation.x += .05;
                      intersects[0].object.rotation.y += .05; */
                     canvas.style.cursor = "pointer";
@@ -215,7 +207,9 @@
                 raycaster.setFromCamera(mouse, camera);
 
                 intersects = raycaster.intersectObjects([mesh]);
-                var canvas = document.body.getElementsByTagName('canvas')[0];
+                //var canvas = document.getElementById("canvas");
+
+                //var canvas = document.body.getElementsByTagName('canvas')[0];
                 if (intersects.length > 0) {
                     // intersects[0].object.callback();
                     // location.href = 'about.html'
@@ -224,8 +218,22 @@
                     canvas.style.cursor = "default";
                 }
             }
+
+            function onDocumentTouchEnd(event) {
+                event.preventDefault();
+
+                mouse.x = (event.changedTouches[0].clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.changedTouches[0].clientY / window.innerHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects([mesh]);
+            }
+
+
             document.addEventListener('mousedown', onDocumentMouseDown, false);
             document.addEventListener('mousemove', onDocumentMouseMove, false);
+            document.addEventListener('touchend', onDocumentTouchEnd, false);
+
             //document.addEventListener('click', onClick, false)
 
         }

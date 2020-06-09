@@ -165,3 +165,24 @@ scene.add(dirLight); */
       new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide, vertexColors: THREE.VertexColors }),
       new THREE.MeshBasicMaterial({ color: 0xeeeeee, side: THREE.DoubleSide, vertexColors: THREE.VertexColors }),
   ] */
+
+
+       /* var loader = new THREE.TextureLoader();
+            loader.load([
+                'textures/omo.png',
+                'textures/projectsFlipped.png'
+            ],
+
+                function (texture) {
+                    var material = new THREE.MeshBasicMaterial({
+                        map: texture
+                    });
+                },
+                // onProgress callback currently not supported
+                undefined,
+
+                // onError callback
+                function (err) {
+                    console.error('An error happened.');
+                }
+            ) */
