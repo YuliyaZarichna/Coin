@@ -219,20 +219,20 @@
                 }
             }
 
-            function onDocumentTouchEnd(event) {
-                event.preventDefault();
-
-                mouse.x = (event.changedTouches[0].clientX / window.innerWidth) * 2 - 1;
-                mouse.y = -(event.changedTouches[0].clientY / window.innerHeight) * 2 + 1;
-
-                raycaster.setFromCamera(mouse, camera);
-                const intersects = raycaster.intersectObjects([mesh]);
-            }
+            /*     function onDocumentTouchEnd(event) {
+                    event.preventDefault();
+    
+                    mouse.x = (event.changedTouches[0].clientX / window.innerWidth) * 2 - 1;
+                    mouse.y = -(event.changedTouches[0].clientY / window.innerHeight) * 2 + 1;
+    
+                    raycaster.setFromCamera(mouse, camera);
+                    const intersects = raycaster.intersectObjects([mesh]);
+                } */
 
 
             document.addEventListener('mousedown', onDocumentMouseDown, false);
             document.addEventListener('mousemove', onDocumentMouseMove, false);
-            document.addEventListener('touchend', onDocumentTouchEnd, false);
+            //document.addEventListener('touchend', onDocumentTouchEnd, false);
 
             //document.addEventListener('click', onClick, false)
 
