@@ -207,24 +207,19 @@
 
             function onDocumentTouchEnd(event) {
                 console.log("onDocumentTouchEnd")
+                if (event.clientX >= marginLeft &&
+                    event.clientX <= canvas.clientWidth + marginLeft &&
+                    event.clientY >= marginTop &&
+                    event.clientY <= canvas.clientHeight + marginTop) {
 
-                raycaster.setFromCamera(mouse, camera);
-                intersects = raycaster.intersectObjects([mesh]);
+                    mouse.x = ((event.changedTouches[0].clientX - marginLeft) / canvas.clientWidth) * 2 - 1;
+                    mouse.y = -((event.changedTouches[0].clientY - marginTop) / canvas.clientHeight) * 2 + 1;
 
-                if (intersects.length === 0) return;
-
-                // find the new indices of faces
-                faceIdx1 = intersects[0].faceIndex;
-                console.log("faceIdx1", faceIdx1)
-
-                if (faceIdx1 > (numberOfVerticies * 2) && faceIdx1 <= (numberOfVerticies * 3)) {
-                    console.log("Projects mobile")
-                    location.href = 'contact.html'
+                } else {
+                    mouse.x = 1;
+                    mouse.y = 1;
                 }
-                else if (faceIdx1 > (numberOfVerticies * 3) && faceIdx1 <= (numberOfVerticies * 4)) {
-                    console.log("About mobile")
-                    location.href = 'about.html'
-                }
+
             }
 
 
