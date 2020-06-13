@@ -172,7 +172,6 @@
                     mouse.x = 1;
                     mouse.y = 1;
                 }
-
             }
 
             function onClick(event) {
@@ -190,8 +189,15 @@
 
             }
 
+            function onDocumentTouchStart(event) {
+                start = new Date();
+            }
+
             function onDocumentTouchEnd(event) {
                 console.log("onDocumentTouchEnd")
+                end = new Date();
+                delta = (end - start) / 1000.0;
+
                 if (event.changedTouches[0].clientX >= marginLeft &&
                     event.changedTouches[0].clientX <= canvas.clientWidth + marginLeft &&
                     event.changedTouches[0].clientY >= marginTop &&
@@ -199,7 +205,9 @@
                     mouse.x = ((event.changedTouches[0].clientX - marginLeft) / canvas.clientWidth) * 2 - 1;
                     mouse.y = -((event.changedTouches[0].clientY - marginTop) / canvas.clientHeight) * 2 + 1;
 
-                    onClick();
+                    if (delta < clickDuration) {
+                        onClick();
+                    }
                 } else {
                     mouse.x = 1;
                     mouse.y = 1;
@@ -211,6 +219,7 @@
             document.addEventListener('mousedown', onDocumentMouseDown, false);
             document.addEventListener('mouseup', onDocumentMouseUp, false);
             document.addEventListener('mousemove', onDocumentMouseMove, false);
+            document.addEventListener('touchstart', onDocumentTouchStart, false);
             document.addEventListener('touchend', onDocumentTouchEnd, false);
             //  document.addEventListener('click', onClick, false)
 
