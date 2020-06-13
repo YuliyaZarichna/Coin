@@ -76,8 +76,8 @@ window.onload = function () {
     function onDocumentMouseDown(event) {
         event.preventDefault();
 
-        /*  mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-         mouse.y = - (event.clientY / renderer.domElement.clientHeight) * 2 + 1; */
+        mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+        mouse.y = - (event.clientY / renderer.domElement.clientHeight) * 2 + 1;
 
         raycaster.setFromCamera(mouse, camera);
 
@@ -167,22 +167,22 @@ scene.add(dirLight); */
   ] */
 
 
-       /* var loader = new THREE.TextureLoader();
-            loader.load([
-                'textures/omo.png',
-                'textures/projectsFlipped.png'
-            ],
+/* var loader = new THREE.TextureLoader();
+     loader.load([
+         'textures/omo.png',
+         'textures/projectsFlipped.png'
+     ],
 
-                function (texture) {
-                    var material = new THREE.MeshBasicMaterial({
-                        map: texture
-                    });
-                },
-                // onProgress callback currently not supported
-                undefined,
+         function (texture) {
+             var material = new THREE.MeshBasicMaterial({
+                 map: texture
+             });
+         },
+         // onProgress callback currently not supported
+         undefined,
 
-                // onError callback
-                function (err) {
-                    console.error('An error happened.');
-                }
-            ) */
+         // onError callback
+         function (err) {
+             console.error('An error happened.');
+         }
+     ) */
