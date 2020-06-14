@@ -16,7 +16,7 @@
                 <a href="about.html">About</a>
             </li>
             <li>
-                <a href="contact.html">Projets</a>
+                <a href="contact.html">Projects</a>
             </li>
         </ul>
     </nav>
@@ -31,9 +31,11 @@
     <script>
         var camera, canvas, scene, renderer, material, mesh, controls;
         var numberOfVerticies = 100;
+        var coinWidth = 5;
+        var coinThikness = 0.1;
         var color = new THREE.Color('#A9A9ff');
         var resized = false;
-
+        console.log("coinWidth", coinWidth)
         var marginLeft = document.getElementById("container").offsetLeft;
         var marginTop = document.getElementById("container").offsetTop;
 
@@ -55,7 +57,7 @@
 
             scene.add(camera);
 
-            var coin = new THREE.CylinderGeometry(3, 3, 0.3, numberOfVerticies);
+            var coin = new THREE.CylinderGeometry(coinWidth, coinWidth, coinThikness, numberOfVerticies);
 
             var textureLoader = new THREE.TextureLoader();
             var textureFront = textureLoader.load('textures/omo.jpg');
@@ -76,7 +78,7 @@
 
             mesh.scale.set(-1, -1, 1);
 
-            camera.position.set(0, 0, 8);
+            camera.position.set(0, 0, 13);
 
             mesh.rotation.y = 1.57;
             mesh.rotation.z = 1.57;
@@ -89,6 +91,7 @@
         }
 
         function resizeCanvasToDisplaySize() {
+            console.log("resizeCanvasToDisplaySize");
             resized = false;
             const canvas = renderer.domElement;
             const width = canvas.clientWidth;
@@ -174,21 +177,6 @@
                 }
             }
 
-            function onClick(event) {
-                raycaster.setFromCamera(mouse, camera);
-                intersects = raycaster.intersectObjects([mesh]);
-                if (intersects.length === 0) return;
-                // find the new indices of faces
-                faceIdx1 = intersects[0].faceIndex;
-                if (faceIdx1 > (numberOfVerticies * 2) && faceIdx1 <= (numberOfVerticies * 3)) {
-                    location.href = 'contact.html'
-                }
-                else if (faceIdx1 > (numberOfVerticies * 3) && faceIdx1 <= (numberOfVerticies * 4)) {
-                    location.href = 'about.html'
-                }
-
-            }
-
             function onDocumentTouchStart(event) {
                 start = new Date();
             }
@@ -213,6 +201,20 @@
                     mouse.y = 1;
                 }
 
+            }
+
+            function onClick(event) {
+                raycaster.setFromCamera(mouse, camera);
+                intersects = raycaster.intersectObjects([mesh]);
+                if (intersects.length === 0) return;
+                // find the new indices of faces
+                faceIdx1 = intersects[0].faceIndex;
+                if (faceIdx1 > (numberOfVerticies * 2) && faceIdx1 <= (numberOfVerticies * 3)) {
+                    location.href = 'contact.html'
+                }
+                else if (faceIdx1 > (numberOfVerticies * 3) && faceIdx1 <= (numberOfVerticies * 4)) {
+                    location.href = 'about.html'
+                }
             }
 
 
