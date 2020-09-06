@@ -1,20 +1,12 @@
 import * as THREE from "../node_modules/three/build/three.module.js";
-//import * as THREE from './build/three.module.js';
-//import * as THREE from 'https://unpkg.com/three@0.120.1/build/three.module.js';
-
 import { OrbitControls } from "../node_modules/three/examples/jsm/controls/OrbitControls.js";
-import { GLTFLoader } from "./node_modules/three/examples/jsm/loaders/GLTFLoader.js";
 
-// import { OrbitControls } from 'https://unpkg.com/three@0.120.1/examples/jsm/controls/OrbitControls.js';
-// import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
-
-var camera, canvas, scene, renderer, material, mesh, controls;
+var camera, canvas, scene, renderer, mesh, controls;
 var numberOfVerticies = 100;
 var coinWidth = 5;
 var coinThikness = 0.2;
 var color = new THREE.Color("#A9A9ff");
 var resized = false;
-console.log("coinWidth", coinWidth);
 var marginLeft = document.getElementById("container").offsetLeft;
 var marginTop = document.getElementById("container").offsetTop;
 
@@ -147,37 +139,46 @@ window.onload = function () {
     ONE: THREE.TOUCH.ROTATE,
   };
   controls.enableZoom = false;
+  controls.enabled = false;
+
   controls.minPolarAngle = Math.PI / 2;
   controls.maxPolarAngle = Math.PI / 2;
 
   function onDocumentMouseDown(event) {
-    console.log("down");
+    console.log("mouse down");
+    controls.enabled = true;
+
     start = new Date();
   }
 
   function onDocumentMouseUp(event) {
-    console.log("up");
-    end = new Date();
-    delta = (end - start) / 1000.0;
-    console.log("delta", delta);
-    if (delta < clickDuration) {
-      console.log("if mouse up");
-      handleClick();
-    } else {
-      console.log("press");
+    console.log("mouse up");
+    controls.enabled = false;
+
+    if (controls.enabled === false) {
+      end = new Date();
+      delta = (end - start) / 1000.0;
+      if (delta < clickDuration) {
+        handleClick();
+      } else {
+        console.log("press");
+      }
     }
   }
 
   function onDocumentMouseMove(event) {
+    console.log("mouse move");
+
+    //controls.enabled = true;
     raycaster.setFromCamera(mouse, camera);
     intersects = raycaster.intersectObjects([mesh]);
-    console.log("intersects", intersects);
-
     var canvas = document.getElementById("canvas");
     if (intersects.length > 0) {
       canvas.style.cursor = "pointer";
+      // controls.enableRotate = true;
     } else {
       canvas.style.cursor = "default";
+      // controls.enabled = true;
     }
 
     if (
@@ -186,9 +187,11 @@ window.onload = function () {
       event.clientY >= marginTop &&
       event.clientY <= canvas.clientHeight + marginTop
     ) {
+      console.log("mouse move if");
       mouse.x = ((event.clientX - marginLeft) / canvas.clientWidth) * 2 - 1;
       mouse.y = -((event.clientY - marginTop) / canvas.clientHeight) * 2 + 1;
     } else {
+      console.log("mouse move else");
       mouse.x = 1;
       mouse.y = 1;
     }
@@ -227,11 +230,11 @@ window.onload = function () {
     }
   }
 
-  function handleClick(event) {
+  function handleClick() {
     console.log("click function");
     raycaster.setFromCamera(mouse, camera);
     intersects = raycaster.intersectObjects([mesh]);
-    console.log("intersects in click func", intersects);
+    // controls.enabled = false;
 
     if (intersects.length === 0) {
       console.log("return");
@@ -240,6 +243,7 @@ window.onload = function () {
     // find the new indices of faces
     faceIdx1 = intersects[0].faceIndex;
     if (faceIdx1 > numberOfVerticies * 2 && faceIdx1 <= numberOfVerticies * 3) {
+      //controls.enabled = false;
       location.href = "contact.html";
     } else if (
       faceIdx1 > numberOfVerticies * 3 &&
@@ -254,5 +258,5 @@ window.onload = function () {
   document.addEventListener("mousemove", onDocumentMouseMove, false);
   document.addEventListener("touchstart", onDocumentTouchStart, false);
   document.addEventListener("touchend", onDocumentTouchEnd, false);
-  //  document.addEventListener('click', onClick, false)
+  // document.addEventListener("click", handleClick, false);
 };
