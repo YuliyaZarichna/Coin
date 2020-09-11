@@ -1,5 +1,5 @@
-import * as THREE from "../node_modules/three/build/three.module.js";
-import { OrbitControls } from "../node_modules/three/examples/jsm/controls/OrbitControls.js";
+import * as THREE from "./node_modules/three/build/three.module.js";
+import { OrbitControls } from "./node_modules/three/examples/jsm/controls/OrbitControls.js";
 
 var camera, canvas, scene, renderer, mesh, controls;
 var numberOfVerticies = 100;
@@ -135,51 +135,50 @@ window.onload = function () {
   controls = new OrbitControls(camera, renderer.domElement);
   console.log("controls", controls);
 
-  controls.touches = {
+  /* controls.touches = {
     ONE: THREE.TOUCH.ROTATE,
-  };
+  }; */
+  controls.enabled = true;
   controls.enableZoom = false;
-  controls.enabled = false;
+  controls.enableRotate = true;
 
   controls.minPolarAngle = Math.PI / 2;
   controls.maxPolarAngle = Math.PI / 2;
 
   function onDocumentMouseDown(event) {
     console.log("mouse down");
+    event.preventDefault();
     controls.enabled = true;
+    controls.enableRotate = true;
 
+    // controls.enabled = !controls.enabled;
     start = new Date();
   }
 
   function onDocumentMouseUp(event) {
     console.log("mouse up");
+    event.preventDefault();
     controls.enabled = false;
-
-    if (controls.enabled === false) {
-      end = new Date();
-      delta = (end - start) / 1000.0;
-      if (delta < clickDuration) {
-        handleClick();
-      } else {
-        console.log("press");
-      }
+    end = new Date();
+    delta = (end - start) / 1000.0;
+    if (delta < clickDuration) {
+      handleClick();
+    } else {
+      console.log("press");
     }
   }
 
   function onDocumentMouseMove(event) {
-    console.log("mouse move");
-
-    //controls.enabled = true;
+    // console.log("mouse move");
+    event.preventDefault();
     raycaster.setFromCamera(mouse, camera);
     intersects = raycaster.intersectObjects([mesh]);
     var canvas = document.getElementById("canvas");
-    if (intersects.length > 0) {
+    /*  if (intersects.length > 0) {
       canvas.style.cursor = "pointer";
-      // controls.enableRotate = true;
     } else {
       canvas.style.cursor = "default";
-      // controls.enabled = true;
-    }
+    } */
 
     if (
       event.clientX >= marginLeft &&
@@ -187,11 +186,9 @@ window.onload = function () {
       event.clientY >= marginTop &&
       event.clientY <= canvas.clientHeight + marginTop
     ) {
-      console.log("mouse move if");
       mouse.x = ((event.clientX - marginLeft) / canvas.clientWidth) * 2 - 1;
       mouse.y = -((event.clientY - marginTop) / canvas.clientHeight) * 2 + 1;
     } else {
-      console.log("mouse move else");
       mouse.x = 1;
       mouse.y = 1;
     }
@@ -234,7 +231,7 @@ window.onload = function () {
     console.log("click function");
     raycaster.setFromCamera(mouse, camera);
     intersects = raycaster.intersectObjects([mesh]);
-    // controls.enabled = false;
+    //controls.enabled = false;
 
     if (intersects.length === 0) {
       console.log("return");
@@ -256,7 +253,7 @@ window.onload = function () {
   document.addEventListener("mousedown", onDocumentMouseDown, false);
   document.addEventListener("mouseup", onDocumentMouseUp, false);
   document.addEventListener("mousemove", onDocumentMouseMove, false);
-  document.addEventListener("touchstart", onDocumentTouchStart, false);
-  document.addEventListener("touchend", onDocumentTouchEnd, false);
+  /* document.addEventListener("touchstart", onDocumentTouchStart, false);
+  document.addEventListener("touchend", onDocumentTouchEnd, false); */
   // document.addEventListener("click", handleClick, false);
 };
